@@ -1,9 +1,9 @@
 
-# Space Invader Clone (스페이더 인베이더 클론)
+# Space Invader Clone (스페이스 인베이더 클론) V 0.2
 
-I'm planning to create a retro arcade game, Space Invaders clone, using Unity 6.0. My goal is to implement it using Scriptable Objects, Object Pooling, and the Observer Pattern. Currently not working.
+I'm planning to create a retro arcade game, Space Invaders clone, using Unity 6.0. My goal is to implement it using Scriptable Objects, Object Pooling, and the Observer Pattern. Currently not working(v 0.2).
 
-레트로 아케이드 게임인 스페이스 인베이더를 유니티로 만들어보려고 합니다. 스크립터블 오브젝트, 오브젝트 풀, 옵서버 패턴을 사용해서 구현하는 것이 목표입니다. 아직 작동하지 않습니다(v 0.1).
+레트로 아케이드 게임인 스페이스 인베이더를 유니티로 만들어보려고 합니다. 스크립터블 오브젝트, 오브젝트 풀, 옵서버 패턴을 사용해서 구현하는 것이 목표입니다. 아직 작동하는 상태는 아닙니다(v 0.2).
 
 - Recommended Unity version: Unity 6 (6000.0.32f1 and later)
 
@@ -14,11 +14,16 @@ I'm planning to create a retro arcade game, Space Invaders clone, using Unity 6.
 
 ## Screenshots (스크린샷)
 
-(Not yet!)
+![screenshot](Assets/Screenshot/screenshot01.png)
 
 ## Version History (버전 내역)
 
-**v 0.1 - (2025-01-09)**
+**V 0.2 - (2025-01-10)**
+- Now player ship can fire laser
+- Laser object pool impremented
+- Partially destructable bunker implemented
+
+**V 0.1 - (2025-01-09)**
 - First version
 - Player ship movement test
 - Asset test
