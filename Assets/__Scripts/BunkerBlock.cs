@@ -17,7 +17,6 @@ public class BunkerBlock : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("hit");
         if (other.CompareTag("Laser"))
         {
             Destroy(gameObject);
