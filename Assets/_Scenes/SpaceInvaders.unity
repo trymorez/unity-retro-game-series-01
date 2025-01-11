@@ -841,6 +841,8 @@ MonoBehaviour:
   startPosY: 7.5
   stepX: 2
   stepY: -1.5
+  tick: 0.1
+  screenEdge: 15
 --- !u!4 &1979868422
 Transform:
   m_ObjectHideFlags: 0

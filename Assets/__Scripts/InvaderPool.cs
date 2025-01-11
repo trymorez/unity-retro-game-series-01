@@ -16,6 +16,11 @@ public class InvaderPool : MonoBehaviour
         instance = this;
         Invader.OnRecycleInvader += RecycleInvader;
 
+        invaderPoolInitialize();
+    }
+
+    void invaderPoolInitialize()
+    {
         int typeIndex = 0;
 
         foreach (var invaderData in invaderDatas)
@@ -23,15 +28,22 @@ public class InvaderPool : MonoBehaviour
             Queue<GameObject> invaderQueue = new Queue<GameObject>();
             for (int i = 0; i < poolSize[typeIndex]; i++)
             {
-                GameObject invader = Instantiate(invaderData.prefab);
-                Invader invaderObj = invader.GetComponent<Invader>();
-                invaderObj.prefab = invaderData.prefab;
-                invader.SetActive(false);
-                invaderQueue.Enqueue(invader);
+                invaderPoolPopulate(invaderQueue, invaderData);
             }
             invaderPools.Add(invaderData.prefab, invaderQueue);
             typeIndex++;
         }
+    }
+
+    void invaderPoolPopulate(Queue<GameObject> invaderQueue, InvaderData invaderData)
+    {
+        GameObject invaderInstance = Instantiate(invaderData.prefab);
+        Invader invader = invaderInstance.GetComponent<Invader>();
+        invader.score = invaderData.score;
+        invader.color = invaderData.color;
+        invader.prefab = invaderData.prefab;
+        invaderInstance.SetActive(false);
+        invaderQueue.Enqueue(invaderInstance);
     }
 
     void OnDisable()

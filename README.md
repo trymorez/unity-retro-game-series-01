@@ -17,6 +17,10 @@ I'm planning to create a retro arcade game, Space Invaders clone, using Unity 6.
 ![screenshot](Assets/Screenshot/Screenshot01.png)
 
 ## Version History (버전 내역)
+**V 0.4 - (2025-01-10)**
+- Colors have been applied to the invaders and bunkers
+- Testing the basic movement of the invaders
+
 **V 0.3 - (2025-01-10)**
 - Invaders pool implemented (using dictionary and queue )
 - Testing invaders spawning routine

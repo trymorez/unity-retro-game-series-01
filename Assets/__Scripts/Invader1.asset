@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Invader1
   m_EditorClassIdentifier: 
   score: 50
-  color: {r: 1, g: 1, b: 0.31372553, a: 1}
+  color: {r: 0.33333334, g: 1, b: 0.33333334, a: 1}
   prefab: {fileID: 3254514398531436454, guid: f71eba1ef375d5e43a93ea5ff343c29d, type: 3}
