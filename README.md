@@ -1,5 +1,5 @@
 
-# Space Invader Clone (스페이스 인베이더 클론) V 0.3
+# Space Invader Clone (스페이스 인베이더 클론) V 0.4
 
 I'm planning to create a retro arcade game, Space Invaders clone, using Unity 6.0. My goal is to implement it using Scriptable Objects, Object Pooling, and the Observer Pattern. Game is not currently not working.
 
