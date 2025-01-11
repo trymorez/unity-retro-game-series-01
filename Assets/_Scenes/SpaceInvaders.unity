@@ -605,6 +605,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9e14d84de00d21f48b8509135b3bc4b9, type: 3}
+--- !u!1 &1443241400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1443241401}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1443241401
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443241400}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25406057, y: 0.26827505, z: -0.07547483}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1729565151
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,8 +872,9 @@ MonoBehaviour:
   startPosY: 7.5
   stepX: 2
   stepY: -1.5
-  tick: 0.1
+  tick: 0.05
   screenEdge: 15
+  deadline: -8
 --- !u!4 &1979868422
 Transform:
   m_ObjectHideFlags: 0
@@ -917,3 +949,4 @@ SceneRoots:
   - {fileID: 1968023549}
   - {fileID: 1736097768}
   - {fileID: 302387137}
+  - {fileID: 1443241401}

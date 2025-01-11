@@ -22,5 +22,10 @@ public class BunkerBlock : MonoBehaviour
             Destroy(gameObject);
             OnRecycleLaser!.Invoke(other.gameObject);
         }
+
+        else if (other.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);            
+        }
     }
 }

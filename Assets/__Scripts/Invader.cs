@@ -9,10 +9,8 @@ public class Invader : MonoBehaviour
     public Color color;
     public GameObject prefab;
     public static Action<GameObject, GameObject> OnRecycleInvader;
-    float screenEdge = 15f;
-
+    public Sprite[] sprite;
     SpriteRenderer spriteRenderer;
-
 
     void Start()
     {
@@ -24,6 +22,7 @@ public class Invader : MonoBehaviour
     void InvaderMove(InvaderGroupBound bound, Vector3 move)
     {
         transform.Translate(move);
+        spriteRenderer.sprite = sprite[bound.sprite];
         float myPositionX = transform.position.x;
         float myPositionY = transform.position.y;
 
@@ -38,7 +37,6 @@ public class Invader : MonoBehaviour
                 bound.leftX = myPositionX;
             }
         }
-
         if (move.x < 0)
         {
             if (myPositionX < bound.rightX)
@@ -50,21 +48,15 @@ public class Invader : MonoBehaviour
                 bound.leftX = myPositionX;
             }
         }
-
-
-        if (myPositionY > bound.topY)
-        {
-            bound.topY = myPositionY;
-        }
+        //if (myPositionY > bound.topY)
+        //{
+        //    bound.topY = myPositionY;
+        //}
         if (myPositionY < bound.bottomY)
         {
             bound.bottomY = myPositionY;
         }
     }
-
-
-
-
 
     void OnTriggerEnter2D(Collider2D other)
     {

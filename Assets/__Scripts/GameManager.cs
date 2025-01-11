@@ -8,6 +8,7 @@ public class InvaderGroupBound
     public float rightX;
     public float topY;
     public float bottomY;
+    public int sprite;
 }
 
 public class GameManager : MonoBehaviour
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float stepY = -1.5f;
     [SerializeField] float tick = 0.2f;
     [SerializeField] float screenEdge = 15f;
+    [SerializeField] float deadline = -8f;
 
     int invaderDirection = 1;
     int descentSteps = 2;
@@ -72,12 +74,14 @@ public class GameManager : MonoBehaviour
         {
             yield return new WaitForSeconds(tick);
             InvaderProgress();
-            //InvaderMove!.Invoke(info, Vector3.zero);
+            GameOverCheck();
         }
+        GameOver();
     }
 
     void InvaderProgress()
     {
+        info.sprite = (info.sprite + 1) % 2;
         if (invaderDescent == true)
         {
             InvaderVerticalMove();
@@ -94,6 +98,7 @@ public class GameManager : MonoBehaviour
         {
             invaderDescent = false;
             descentCurrentSteps = 0;
+            InvaderHorizontalMove();
         }
         else
         {
@@ -109,6 +114,7 @@ public class GameManager : MonoBehaviour
         {
             invaderDirection *= -1;
             invaderDescent = true;
+            InvaderVerticalMove();
         }
         else
         {
@@ -116,6 +122,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void GameOverCheck()
+    {
+        if (info.bottomY <= deadline)
+        {
+            isGameRunning = false;
+        }
+    }
+
+    void GameOver()
+    {
+        Debug.Log("GameOver");
+    }
 
     void Update()
     {
