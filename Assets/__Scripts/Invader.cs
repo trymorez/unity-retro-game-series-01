@@ -9,6 +9,7 @@ public class Invader : MonoBehaviour
     public Color color;
     public GameObject prefab;
     public static Action<GameObject, GameObject> OnRecycleInvader;
+    public static Action OnTickProgress;
     public Sprite[] sprite;
     SpriteRenderer spriteRenderer;
 
@@ -19,42 +20,38 @@ public class Invader : MonoBehaviour
         GameManager.InvaderMove += InvaderMove;
     }
 
-    void InvaderMove(InvaderGroupBound bound, Vector3 move)
+    void InvaderMove(InvaderGroupBound info, Vector3 move)
     {
         transform.Translate(move);
-        spriteRenderer.sprite = sprite[bound.sprite];
+        spriteRenderer.sprite = sprite[info.sprite];
         float myPositionX = transform.position.x;
         float myPositionY = transform.position.y;
 
         if (move.x > 0)
         {
-            if (myPositionX > bound.rightX)
+            if (myPositionX > info.rightX)
             {
-                bound.rightX = myPositionX;
+                info.rightX = myPositionX;
             }
-            if (myPositionX > bound.leftX)
+            if (myPositionX > info.leftX)
             {
-                bound.leftX = myPositionX;
+                info.leftX = myPositionX;
             }
         }
         if (move.x < 0)
         {
-            if (myPositionX < bound.rightX)
+            if (myPositionX < info.rightX)
             {
-                bound.rightX = myPositionX;
+                info.rightX = myPositionX;
             }
-            if (myPositionX < bound.leftX)
+            if (myPositionX < info.leftX)
             {
-                bound.leftX = myPositionX;
+                info.leftX = myPositionX;
             }
         }
-        //if (myPositionY > bound.topY)
-        //{
-        //    bound.topY = myPositionY;
-        //}
-        if (myPositionY < bound.bottomY)
+        if (myPositionY < info.bottomY)
         {
-            bound.bottomY = myPositionY;
+            info.bottomY = myPositionY;
         }
     }
 
@@ -62,6 +59,9 @@ public class Invader : MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
+            SoundManager.Play("InvaderDestroied");
+            GameManager.InvaderMove -= InvaderMove;
+            OnTickProgress!.Invoke();
             OnRecycleInvader!.Invoke(gameObject, prefab);
         }
     }

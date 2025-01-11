@@ -8,6 +8,8 @@ public class InvaderGroupBound
     public float rightX;
     public float topY;
     public float bottomY;
+    public int invaders = 50;
+    public float tick;
     public int sprite;
 }
 
@@ -15,18 +17,27 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] InvaderData[] invaderDatas;
     [SerializeField] InvaderPool invaderPool;
-    [SerializeField] float startPosX = 16.5f;
+    [SerializeField] float startPosX = -8f;
     [SerializeField] float startPosY = 7.5f;
-    [SerializeField] float stepX = -2f;
-    [SerializeField] float stepY = -1.5f;
-    [SerializeField] float tick = 0.2f;
+    [SerializeField] float spacingX = 2f;
+    [SerializeField] float spacingY = -1.5f;
+    [SerializeField] float moveAmountX = 0.5f;
+    [SerializeField] float moveAmountY = 0.5f;
+    [SerializeField] float tickInterval = 0.5f;
+    [SerializeField] float tickFastest = 0.01f;
     [SerializeField] float screenEdge = 15f;
     [SerializeField] float deadline = -8f;
+    [SerializeField] int life = 2;
+    [SerializeField] int score = 2;
+    [SerializeField] int highScore = 2;
 
     int invaderDirection = 1;
     int descentSteps = 2;
     int descentCurrentSteps;
     bool invaderDescent;
+
+    string[] tickSounds = { "Tick0", "Tick1", "Tick2", "Tick3" };
+    int tickSoundsIndex = 0;
 
     public static Action<InvaderGroupBound, Vector3> InvaderMove;
     InvaderGroupBound info;
@@ -36,17 +47,32 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Invader.OnTickProgress += TickProgress;
+
         info = new InvaderGroupBound();
         info.leftX = startPosX;
         info.rightX = startPosX;
         info.topY = startPosY;
         info.bottomY = startPosY;
+        info.invaders = 50;
+        info.tick = tickInterval;
 
         LevelStart();
     }
 
+    void OnDisable()
+    {
+        Invader.OnTickProgress -= TickProgress;
+    }
+
+    void TickProgress()
+    {
+        tickInterval = Mathf.Lerp(tickFastest, 0.5f, (float)--info.invaders / 50f);
+    }
+
     void LevelStart()
     {
+        UIManager.instance.LevelDisplay(1);
         InitializeInvaders();
         StartCoroutine(InvaderProcess());
     }
@@ -63,7 +89,7 @@ public class GameManager : MonoBehaviour
             for (int x = 0; x < 10; x++)
             {
                 GameObject invader = invaderPool.GetInvader(InvaderPool.instance.invaderDatas[invaderType].prefab);
-                invader.transform.position = new Vector3(startPosX + stepX * x, startPosY + stepY * y, 0);
+                invader.transform.position = new Vector3(startPosX + spacingX * x, startPosY + spacingY * y, 0);
             }
         }
     }
@@ -72,7 +98,7 @@ public class GameManager : MonoBehaviour
     {
         while (isGameRunning)
         {
-            yield return new WaitForSeconds(tick);
+            yield return new WaitForSeconds(tickInterval);
             InvaderProgress();
             GameOverCheck();
         }
@@ -82,6 +108,7 @@ public class GameManager : MonoBehaviour
     void InvaderProgress()
     {
         info.sprite = (info.sprite + 1) % 2;
+        PlayTickSound();
         if (invaderDescent == true)
         {
             InvaderVerticalMove();
@@ -102,7 +129,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            InvaderMove!.Invoke(info, Vector3.down * 0.25f);
+            InvaderMove!.Invoke(info, Vector3.down * moveAmountY);
             descentCurrentSteps++;
         }
     }
@@ -118,8 +145,14 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            InvaderMove!.Invoke(info, Vector3.right * 0.25f * invaderDirection);
+            InvaderMove!.Invoke(info, Vector3.right * moveAmountX * invaderDirection);
         }
+    }
+
+    void PlayTickSound()
+    {
+        tickSoundsIndex = (tickSoundsIndex + 1) % 4;
+        SoundManager.Play(tickSounds[tickSoundsIndex]);
     }
 
     void GameOverCheck()

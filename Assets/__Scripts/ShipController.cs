@@ -53,6 +53,7 @@ public class ShipController : MonoBehaviour
         {
             if (Time.time > nextLaserTime)
             {
+                SoundManager.Play("Laser");
                 nextLaserTime = Time.time + laserDelay;
                 GameObject laser = LaserPool.GetLaser();
                 laser.transform.position = transform.position;
