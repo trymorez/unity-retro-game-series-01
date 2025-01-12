@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4242775804166074201}
   - component: {fileID: -6778290385468166917}
   - component: {fileID: -3277137959922462594}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Invader3
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ GameObject:
   m_Component:
   - component: {fileID: 537423673108246431}
   - component: {fileID: 2574769558415711821}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float spacingY = -1.5f;
     [SerializeField] float moveAmountX = 0.5f;
     [SerializeField] float moveAmountY = 0.5f;
+    [SerializeField] float tickInitial = 0.5f;
     [SerializeField] float tickInterval = 0.5f;
     [SerializeField] float tickFastest = 0.01f;
     [SerializeField] float screenEdge = 15f;
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] int life = 2;
     [SerializeField] int score = 0;
     [SerializeField] int highScore = 0;
+    [SerializeField] GameObject player;
 
     int invaderDirection = 1;
     int descentSteps = 2;
@@ -43,13 +45,19 @@ public class GameManager : MonoBehaviour
     int tickSoundsIndex = 0;
 
     public static Action<InvaderGroupInfo, Vector3> InvaderMove;
+    public static Action OnGameStart;
     InvaderGroupInfo info;
 
     int level = 0;
-    bool isGameRunning = true;
+    public static bool isGameRunning = false;
+    public static GameManager instance;
 
     List<IScoreObserver> observers = new List<IScoreObserver>();
 
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         Invader.OnInvaderDead += InvaderDead;
@@ -64,8 +72,12 @@ public class GameManager : MonoBehaviour
         score = 0;
         highScore = PlayerPrefs.GetInt("HighScore", 0);
         ObserverNotifyHighScore();
-        Debug.Log(highScore);
-        LevelStart();
+        GameStart();
+    }
+
+    void GameStart()
+    {
+        OnGameStart.Invoke();
     }
 
     void OnDisable()
@@ -101,7 +113,7 @@ public class GameManager : MonoBehaviour
 
     void InvaderDead(int invaderScore)
     {
-        tickInterval = Mathf.Lerp(tickFastest, 0.5f, (float)--info.invaders / 50f);
+        tickInterval = Mathf.Lerp(tickFastest, tickInitial, (float)--info.invaders / 50f);
         score += invaderScore;
         ObserverNotifyScore();
         if (score > highScore)
@@ -112,10 +124,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    void LevelStart()
+    public void LevelStart()
     {
         UIManager.instance.LevelDisplay(1);
+        player.SetActive(true);
         InitializeInvaders();
         StartCoroutine(InvaderProcess());
     }
@@ -194,8 +206,8 @@ public class GameManager : MonoBehaviour
 
     void PlayTickSound()
     {
-        tickSoundsIndex = (tickSoundsIndex + 1) % 4;
         SoundManager.Play(tickSounds[tickSoundsIndex]);
+        tickSoundsIndex = (tickSoundsIndex + 1) % 4;
     }
 
     void GameOverCheck()

@@ -14,7 +14,7 @@ public class Laser : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector2.up * speed * Time.deltaTime);
+        transform.Translate(Vector3.up * speed * Time.deltaTime);
 
         if (transform.position.y > screenHeight)
         {
@@ -33,6 +33,10 @@ public class Laser : MonoBehaviour
         else if (other.CompareTag("Enemy"))
         {
             OnRecycleLaser!.Invoke(gameObject);
+        }
+        else
+        {
+            Debug.Log(other);
         }
     }
 }

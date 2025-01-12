@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 822903728317102200}
   - component: {fileID: 714333800005281184}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 4851096455823782665}
   - component: {fileID: 793128749134999160}
   - component: {fileID: -1943660755706650827}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Invader2
   m_TagString: Enemy
   m_Icon: {fileID: 0}

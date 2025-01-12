@@ -11,7 +11,6 @@ public class LaserPool : MonoBehaviour
     void Start()
     {
         Laser.OnRecycleLaser += RecycleLaser;
-        BunkerBlock.OnRecycleLaser += RecycleLaser;
 
         laserPool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
@@ -22,10 +21,9 @@ public class LaserPool : MonoBehaviour
         }
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         Laser.OnRecycleLaser -= RecycleLaser;
-        BunkerBlock.OnRecycleLaser -= RecycleLaser;
     }
 
     public GameObject GetLaser()
@@ -45,6 +43,15 @@ public class LaserPool : MonoBehaviour
 
     public void RecycleLaser(GameObject laser)
     {
+        //if (laser.transform.position.y < 10)
+        //{
+        //    Debug.Log("gotcha!");
+        //    Debug.Log(laser.transform.position.y);
+        //}
+        if (laser.activeSelf == false)
+        {
+            Debug.Log("somethings wrong");
+        }
         laser.SetActive(false);
         laserPool.Enqueue(laser);
     }

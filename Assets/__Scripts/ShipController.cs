@@ -57,7 +57,6 @@ public class ShipController : MonoBehaviour
                 nextLaserTime = Time.time + laserDelay;
                 GameObject laser = LaserPool.GetLaser();
                 laser.transform.position = transform.position;
-                laser.transform.rotation = quaternion.identity;
             }
         }
     }
