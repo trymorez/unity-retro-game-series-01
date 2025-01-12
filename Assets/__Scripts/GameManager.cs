@@ -1,8 +1,11 @@
+using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
-public class InvaderGroupBound
+public class InvaderGroupInfo
 {
     public float leftX;
     public float rightX;
@@ -28,8 +31,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] float screenEdge = 15f;
     [SerializeField] float deadline = -8f;
     [SerializeField] int life = 2;
-    [SerializeField] int score = 2;
-    [SerializeField] int highScore = 2;
+    [SerializeField] int score = 0;
+    [SerializeField] int highScore = 0;
 
     int invaderDirection = 1;
     int descentSteps = 2;
@@ -39,36 +42,76 @@ public class GameManager : MonoBehaviour
     string[] tickSounds = { "Tick0", "Tick1", "Tick2", "Tick3" };
     int tickSoundsIndex = 0;
 
-    public static Action<InvaderGroupBound, Vector3> InvaderMove;
-    InvaderGroupBound info;
+    public static Action<InvaderGroupInfo, Vector3> InvaderMove;
+    InvaderGroupInfo info;
 
     int level = 0;
     bool isGameRunning = true;
 
+    List<IScoreObserver> observers = new List<IScoreObserver>();
+
     void Start()
     {
-        Invader.OnTickProgress += TickProgress;
+        Invader.OnInvaderDead += InvaderDead;
 
-        info = new InvaderGroupBound();
+        info = new InvaderGroupInfo();
         info.leftX = startPosX;
         info.rightX = startPosX;
         info.topY = startPosY;
         info.bottomY = startPosY;
         info.invaders = 50;
         info.tick = tickInterval;
-
+        score = 0;
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
+        ObserverNotifyHighScore();
+        Debug.Log(highScore);
         LevelStart();
     }
 
     void OnDisable()
     {
-        Invader.OnTickProgress -= TickProgress;
+        Invader.OnInvaderDead -= InvaderDead;
     }
 
-    void TickProgress()
+    public void ObserverAdd(IScoreObserver observer)
+    {
+        observers.Add(observer);
+    }
+
+    public void ObserverRemove(IScoreObserver observer)
+    {
+        observers.Remove(observer);
+    }
+
+    public void ObserverNotifyScore()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnScoreChanged(score);
+        }
+    }
+
+    public void ObserverNotifyHighScore()
+    {
+        foreach (var observer in observers)
+        {
+            observer.OnHighScoreChanged(highScore);
+        }
+    }
+
+    void InvaderDead(int invaderScore)
     {
         tickInterval = Mathf.Lerp(tickFastest, 0.5f, (float)--info.invaders / 50f);
+        score += invaderScore;
+        ObserverNotifyScore();
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            ObserverNotifyHighScore();
+        }
     }
+
 
     void LevelStart()
     {

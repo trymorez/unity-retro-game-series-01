@@ -9,7 +9,7 @@ public class Invader : MonoBehaviour
     public Color color;
     public GameObject prefab;
     public static Action<GameObject, GameObject> OnRecycleInvader;
-    public static Action OnTickProgress;
+    public static Action<int> OnInvaderDead;
     public Sprite[] sprite;
     SpriteRenderer spriteRenderer;
 
@@ -20,7 +20,7 @@ public class Invader : MonoBehaviour
         GameManager.InvaderMove += InvaderMove;
     }
 
-    void InvaderMove(InvaderGroupBound info, Vector3 move)
+    void InvaderMove(InvaderGroupInfo info, Vector3 move)
     {
         transform.Translate(move);
         spriteRenderer.sprite = sprite[info.sprite];
@@ -61,7 +61,7 @@ public class Invader : MonoBehaviour
         {
             SoundManager.Play("InvaderDestroied");
             GameManager.InvaderMove -= InvaderMove;
-            OnTickProgress!.Invoke();
+            OnInvaderDead!.Invoke(score);
             OnRecycleInvader!.Invoke(gameObject, prefab);
         }
     }
