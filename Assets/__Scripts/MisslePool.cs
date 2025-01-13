@@ -7,10 +7,21 @@ public class MissilePool : MonoBehaviour
     [SerializeField] GameObject missilePrefab;
     [SerializeField] int poolSize;
     Queue<GameObject> missilePool;
+    public static MissilePool Instance { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
-        Missile.OnRecycleMissle += RecycleMissle;
+        MissilePoolCreate();
+    }
+
+    private void MissilePoolCreate()
+    {
+        Missile.OnRecycleMissle += MissleRecycle;
 
         missilePool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
@@ -21,12 +32,27 @@ public class MissilePool : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    public void MissilePoolInit()
     {
-        Missile.OnRecycleMissle -= RecycleMissle;
+        var activeItems = new List<GameObject>();
+
+        foreach (var missile in missilePool)
+        {
+            activeItems.Add(missile);
+        }
+
+        foreach (var missile in activeItems)
+        {
+            MissleRecycle(missile);
+        }
     }
 
-    public GameObject GetMissile()
+    void OnDestroy()
+    {
+        Missile.OnRecycleMissle -= MissleRecycle;
+    }
+
+    public GameObject MissileGet()
     {
         if (missilePool.Count > 0)
         {
@@ -41,7 +67,7 @@ public class MissilePool : MonoBehaviour
         }
     }
 
-    public void RecycleMissle(GameObject missile)
+    public void MissleRecycle(GameObject missile)
     {
         if (missile.activeSelf == true)
         {

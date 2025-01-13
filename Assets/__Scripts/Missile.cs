@@ -24,22 +24,21 @@ public class Missile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Bunker"))
+        switch (other.tag)
         {
-            OnRecycleMissle!.Invoke(gameObject);
-            Destroy(other.gameObject);
-        }
-        else if (other.CompareTag("Player"))
-        {
-            OnRecycleMissle!.Invoke(gameObject);
-        }
-        else if (other.CompareTag("Laser"))
-        {
-            OnRecycleMissle!.Invoke(gameObject);
-        }
-        else
-        {
-            Debug.Log(other);
+            case "Bunker":
+                OnRecycleMissle?.Invoke(gameObject);
+                Destroy(other.gameObject);
+                break;
+
+            case "Player":
+            case "Laser":
+                OnRecycleMissle?.Invoke(gameObject);
+                break;
+
+            default:
+                Debug.Log(other);
+                break;
         }
     }
 }

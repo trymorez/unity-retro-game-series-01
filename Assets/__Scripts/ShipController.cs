@@ -39,6 +39,7 @@ public class ShipController : MonoBehaviour
     {
         if (isShipDestroied)
         {
+            rb.linearVelocityX = 0;
             return;
         }
 
@@ -81,7 +82,7 @@ public class ShipController : MonoBehaviour
             {
                 SoundManager.Play("Laser");
                 nextLaserTime = Time.time + laserDelay;
-                GameObject laser = LaserPool.GetLaser();
+                GameObject laser = LaserPool.LaserGet();
                 laser.transform.position = transform.position;
             }
         }

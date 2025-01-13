@@ -1,12 +1,10 @@
 using UnityEngine;
 using DG.Tweening;
 using TMPro;
-using UnityEngine.SocialPlatforms.Impl;
 using System.Collections;
-using System.Threading.Tasks;
-using UnityEngine.InputSystem;
-using Unity.VisualScripting;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour, IScoreObserver
 {
@@ -33,6 +31,7 @@ public class UIManager : MonoBehaviour, IScoreObserver
         gameManager.ObserverAdd(this);
         GameManager.OnGameStart += IntroScreenStart;
         GameManager.OnLifeChanged += OnLifeChanged;
+        GameManager.OnGameOver += OnGameOver;
         pressAnyKeyMessage = rectIntro[5].GetComponent<CanvasGroup>();
     }
 
@@ -41,6 +40,7 @@ public class UIManager : MonoBehaviour, IScoreObserver
         gameManager.ObserverRemove(this);
         GameManager.OnGameStart -= IntroScreenStart;
         GameManager.OnLifeChanged -= OnLifeChanged;
+        GameManager.OnGameOver -= OnGameOver;
     }
 
     void IntroScreenStart()
@@ -73,7 +73,6 @@ public class UIManager : MonoBehaviour, IScoreObserver
         StartCoroutine(PressAnyKey());
         while (!action.triggered)
         {
-            
             yield return null;
         }
         GameManager.isGameRunning = true;
@@ -93,13 +92,21 @@ public class UIManager : MonoBehaviour, IScoreObserver
         }
     }
 
+    void OnGameOver()
+    {
+        GameManager.isGameRunning = false;
+        SceneManager.LoadScene(0);
+    }
+
     public void LevelDisplay(int level)
     {
+        var levelTextMessage = levelText.GetComponentInChildren<TextMeshProUGUI>();
+        levelTextMessage.text = "LEVEL " + level;
         levelText.DOScale(Vector3.one, 2f).SetEase(Ease.OutExpo);
         levelText.DOScale(Vector3.zero, 1f).SetDelay(2.5f);
     }
 
-    public void ScoreDisplay(int score) 
+    public void ScoreDisplay(int score)
     {
         scoreText.text = "SCORE " + score;
     }

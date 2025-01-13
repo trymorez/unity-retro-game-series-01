@@ -7,10 +7,21 @@ public class LaserPool : MonoBehaviour
     [SerializeField] GameObject laserPrefab;
     [SerializeField] int poolSize;
     Queue<GameObject> laserPool;
+    public static LaserPool Instance { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
-        Laser.OnRecycleLaser += RecycleLaser;
+        LaserPoolCreate();
+    }
+
+    private void LaserPoolCreate()
+    {
+        Laser.OnRecycleLaser += LaserRecycle;
 
         laserPool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
@@ -21,12 +32,27 @@ public class LaserPool : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    public void LaserPoolInit()
     {
-        Laser.OnRecycleLaser -= RecycleLaser;
+        var activeItems = new List<GameObject>();
+
+        foreach (var laser in laserPool)
+        {
+            activeItems.Add(laser);
+        }
+
+        foreach (var laser in activeItems)
+        {
+            LaserRecycle(laser);
+        }
     }
 
-    public GameObject GetLaser()
+    void OnDestroy()
+    {
+        Laser.OnRecycleLaser -= LaserRecycle;
+    }
+
+    public GameObject LaserGet()
     {
         if (laserPool.Count > 0)
         {
@@ -41,7 +67,7 @@ public class LaserPool : MonoBehaviour
         }
     }
 
-    public void RecycleLaser(GameObject laser)
+    public void LaserRecycle(GameObject laser)
     {
         if (laser.activeSelf == true)
         {

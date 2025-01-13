@@ -24,18 +24,16 @@ public class Laser : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Bunker"))
+        switch (other.tag)
         {
-            OnRecycleLaser!.Invoke(gameObject);
-            Destroy(other.gameObject);
-        }
-        else if (other.CompareTag("Enemy"))
-        {
-            OnRecycleLaser!.Invoke(gameObject);
-        }
-        else if (other.CompareTag("Missile"))
-        {
-            OnRecycleLaser!.Invoke(gameObject);
+            case "Bunker":
+                OnRecycleLaser!.Invoke(gameObject);
+                Destroy(other.gameObject);
+                break;
+            case "Enemy":
+            case "Missile":
+                OnRecycleLaser!.Invoke(gameObject);
+                break;
         }
     }
 }

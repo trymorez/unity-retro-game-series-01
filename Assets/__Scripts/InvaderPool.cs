@@ -8,19 +8,18 @@ public class InvaderPool : MonoBehaviour
     [SerializeField] MissilePool missilePool;
     public InvaderData[] invaderDatas;
     public int[] poolSize;
-    public static InvaderPool instance;
+    public static InvaderPool Instance {  get; private set; }
     
     Dictionary<GameObject, Queue<GameObject>> invaderPools = new Dictionary<GameObject, Queue<GameObject>>();
 
     void Awake()
     {
-        instance = this;
-        Invader.OnRecycleInvader += RecycleInvader;
-
-        invaderPoolInitialize();
+        Instance = this;
+        Invader.OnRecycleInvader += InvaderRecycle;
+        InvaderPoolCreate();
     }
 
-    void invaderPoolInitialize()
+    void InvaderPoolCreate()
     {
         int typeIndex = 0;
 
@@ -33,6 +32,26 @@ public class InvaderPool : MonoBehaviour
             }
             invaderPools.Add(invaderData.prefab, invaderQueue);
             typeIndex++;
+        }
+    }
+
+    public void InvaderPoolInit()
+    {
+        foreach (var invaderQueue in invaderPools.Values)
+        {
+            var activeInvaders = new List<GameObject>();
+
+            foreach (var invader in invaderQueue)
+            {
+                if (invader.activeSelf)
+                {
+                    activeInvaders.Add(invader);
+                }
+            }
+            foreach (var invader in activeInvaders)
+            {
+                invader.SetActive(false);
+            }
         }
     }
 
@@ -50,10 +69,10 @@ public class InvaderPool : MonoBehaviour
 
     void OnDisable()
     {
-        Invader.OnRecycleInvader -= RecycleInvader;
+        Invader.OnRecycleInvader -= InvaderRecycle;
     }
 
-    public GameObject GetInvader(GameObject prefab)
+    public GameObject InvaderGet(GameObject prefab)
     {
         if (invaderPools.ContainsKey(prefab) && invaderPools[prefab].Count > 0)
         {
@@ -64,7 +83,7 @@ public class InvaderPool : MonoBehaviour
         return null;
     }
 
-    public void RecycleInvader(GameObject invader, GameObject prefab)
+    public void InvaderRecycle(GameObject invader, GameObject prefab)
     {
         invader.SetActive(false);
         invaderPools[prefab].Enqueue(invader);

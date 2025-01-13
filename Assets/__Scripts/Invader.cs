@@ -21,7 +21,16 @@ public class Invader : MonoBehaviour
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         spriteRenderer.color = color;
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    void OnEnable()
+    {
         GameManager.InvaderMove += InvaderMove;
+    }
+
+    void OnDisable()
+    {
+        GameManager.InvaderMove -= InvaderMove;
     }
 
     void InvaderMove(InvaderGroupInfo info, Vector3 move)
@@ -96,7 +105,6 @@ public class Invader : MonoBehaviour
         if (other.CompareTag("Laser"))
         {
             SoundManager.Play("InvaderDestroied");
-            GameManager.InvaderMove -= InvaderMove;
             OnInvaderDead!.Invoke(score);
             OnRecycleInvader!.Invoke(gameObject, prefab);
         }

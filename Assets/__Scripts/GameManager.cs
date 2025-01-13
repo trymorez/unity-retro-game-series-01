@@ -9,32 +9,25 @@ public class InvaderGroupInfo
     public float rightX;
     public float topY;
     public float bottomY;
-    public int invaders = 50;
-    public float tick;
+    public int invaders;
     public int sprite;
 }
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] MissilePool missilePool;
-    [SerializeField] InvaderData[] invaderDatas;
     [SerializeField] InvaderPool invaderPool;
     [SerializeField] float startPosX = -8f;
     [SerializeField] float startPosY = 7.5f;
     [SerializeField] float spacingX = 2f;
     [SerializeField] float spacingY = -1.5f;
-    [SerializeField] float moveAmountX = 0.5f;
+    [SerializeField] float moveAmountX = 0.25f;
     [SerializeField] float moveAmountY = 0.5f;
     [SerializeField] float tickInitial = 0.5f;
-    [SerializeField] float tickInterval = 0.5f;
+    [SerializeField] float tick = 0.5f;
     [SerializeField] float tickFastest = 0.01f;
-    [SerializeField] float screenEdge = 15f;
+    [SerializeField] float screenEdge = 16f;
     [SerializeField] float deadline = -8f;
-    [SerializeField] int life = 3;
-    [SerializeField] int score = 0;
-    [SerializeField] int highScore = 0;
-    [SerializeField] GameObject player;
-
     int invaderDirection = 1;
     int descentSteps = 2;
     int descentCurrentSteps;
@@ -42,8 +35,13 @@ public class GameManager : MonoBehaviour
     public bool invaderCanShoot;
     float[] invaderShootInterval = { 0.5f, 2.0f };
     float invaderShootNextTime;
-    public List<Vector2> missileStartPos = new List<Vector2>();
 
+    [SerializeField] int life = 3;
+    [SerializeField] int score = 0;
+    [SerializeField] int highScore = 0;
+    [SerializeField] GameObject player;
+
+    public List<Vector2> missileStartPos = new List<Vector2>();
 
     string[] tickSounds = { "Tick0", "Tick1", "Tick2", "Tick3" };
     int tickSoundsIndex = 0;
@@ -51,9 +49,9 @@ public class GameManager : MonoBehaviour
     public static Action<InvaderGroupInfo, Vector3> InvaderMove;
     public static Action OnGameStart;
     public static Action<int> OnLifeChanged;
+    public static Action OnGameOver;
     InvaderGroupInfo info;
-
-    int level = 0;
+    int level = 1;
     public static bool isGameRunning = false;
     public static GameManager instance;
 
@@ -72,8 +70,7 @@ public class GameManager : MonoBehaviour
         info.rightX = startPosX;
         info.topY = startPosY;
         info.bottomY = startPosY;
-        info.invaders = 50;
-        info.tick = tickInterval;
+        info.invaders = 0;
         score = 0;
         highScore = PlayerPrefs.GetInt("HighScore", 0);
         ObserverNotifyHighScore();
@@ -98,9 +95,9 @@ public class GameManager : MonoBehaviour
 
     void OnShipDestoried()
     {
-        if (life-- > 0)
+        if (life > 0)
         {
-            OnLifeChanged.Invoke(life);
+            OnLifeChanged.Invoke(--life);
         }
         else
         {
@@ -136,7 +133,8 @@ public class GameManager : MonoBehaviour
 
     void OnInvaderDead(int invaderScore)
     {
-        tickInterval = Mathf.Lerp(tickFastest, tickInitial, (float)--info.invaders / 50f);
+        info.invaders--;
+        CalculateTick();
         score += invaderScore;
         ObserverNotifyScore();
         if (score > highScore)
@@ -145,6 +143,11 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", highScore);
             ObserverNotifyHighScore();
         }
+    }
+
+    private void CalculateTick()
+    {
+        tick = Mathf.Lerp(tickFastest, tickInitial, (float)info.invaders / 50f);
     }
 
     public void LevelStart()
@@ -167,31 +170,34 @@ public class GameManager : MonoBehaviour
             }
             for (int x = 0; x < 10; x++)
             {
-                GameObject invader = invaderPool.GetInvader(InvaderPool.instance.invaderDatas[invaderType].prefab);
+                info.invaders++;
+                var invader = invaderPool.InvaderGet(InvaderPool.Instance.invaderDatas[invaderType].prefab);
                 invader.transform.position = new Vector3(startPosX + spacingX * x, startPosY + spacingY * y, 0);
             }
         }
+        CalculateTick();
     }
 
     IEnumerator GameProcess()
     {
         while (isGameRunning)
         {
-            yield return new WaitForSeconds(tickInterval);
+            yield return new WaitForSeconds(tick);
             InvaderCheckIfCanShoot();
             InvaderProgress();
-            invaderShoot();
+            InvaderShoot();
             GameOverCheck();
+            LevelCompleteCheck();
         }
         GameOver();
     }
 
-    void invaderShoot()
+    void InvaderShoot()
     {
         if (missileStartPos.Count > 0 && invaderCanShoot)
         {
             //SoundManager.Play("Missile");
-            GameObject missile = missilePool.GetMissile();
+            GameObject missile = missilePool.MissileGet();
             missile.transform.position = missileStartPos[UnityEngine.Random.Range(0, missileStartPos.Count)];
             invaderCanShoot = false;
             invaderShootNextTime = Time.time + UnityEngine.Random.Range(invaderShootInterval[0], invaderShootInterval[1]);
@@ -247,7 +253,10 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            InvaderMove!.Invoke(info, Vector3.right * moveAmountX * invaderDirection);
+            if (InvaderMove != null)
+            {
+                InvaderMove!.Invoke(info, Vector3.right * moveAmountX * invaderDirection);
+            }
         }
     }
 
@@ -255,6 +264,29 @@ public class GameManager : MonoBehaviour
     {
         SoundManager.Play(tickSounds[tickSoundsIndex]);
         tickSoundsIndex = (tickSoundsIndex + 1) % 4;
+    }
+
+    void LevelCompleteCheck()
+    {
+        if (info.invaders == 0)
+        {
+            InvaderPool.Instance.InvaderPoolInit();
+            LaserPool.Instance.LaserPoolInit();
+            MissilePool.Instance.MissilePoolInit();
+            level++;
+            UIManager.instance.LevelDisplay(level);
+
+            info.leftX = startPosX;
+            info.rightX = startPosX;
+            info.topY = startPosY;
+            info.bottomY = startPosY;
+            info.invaders = 0;
+            info.sprite = 0;
+
+            InitializeInvaders();
+            StopAllCoroutines();
+            StartCoroutine(GameProcess());
+        }
     }
 
     void GameOverCheck()
@@ -267,6 +299,6 @@ public class GameManager : MonoBehaviour
 
     void GameOver()
     {
-        Debug.Log("GameOver");
+        OnGameOver.Invoke();
     }
 }
