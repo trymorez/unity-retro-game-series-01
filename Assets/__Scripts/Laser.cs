@@ -29,14 +29,13 @@ public class Laser : MonoBehaviour
             OnRecycleLaser!.Invoke(gameObject);
             Destroy(other.gameObject);
         }
-
         else if (other.CompareTag("Enemy"))
         {
             OnRecycleLaser!.Invoke(gameObject);
         }
-        else
+        else if (other.CompareTag("Missile"))
         {
-            Debug.Log(other);
+            OnRecycleLaser!.Invoke(gameObject);
         }
     }
 }

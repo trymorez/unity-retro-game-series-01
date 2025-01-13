@@ -1,9 +1,7 @@
-using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class InvaderGroupInfo
 {
@@ -18,6 +16,7 @@ public class InvaderGroupInfo
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] MissilePool missilePool;
     [SerializeField] InvaderData[] invaderDatas;
     [SerializeField] InvaderPool invaderPool;
     [SerializeField] float startPosX = -8f;
@@ -31,7 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] float tickFastest = 0.01f;
     [SerializeField] float screenEdge = 15f;
     [SerializeField] float deadline = -8f;
-    [SerializeField] int life = 2;
+    [SerializeField] int life = 3;
     [SerializeField] int score = 0;
     [SerializeField] int highScore = 0;
     [SerializeField] GameObject player;
@@ -40,12 +39,18 @@ public class GameManager : MonoBehaviour
     int descentSteps = 2;
     int descentCurrentSteps;
     bool invaderDescent;
+    public bool invaderCanShoot;
+    float[] invaderShootInterval = { 0.5f, 2.0f };
+    float invaderShootNextTime;
+    public List<Vector2> missileStartPos = new List<Vector2>();
+
 
     string[] tickSounds = { "Tick0", "Tick1", "Tick2", "Tick3" };
     int tickSoundsIndex = 0;
 
     public static Action<InvaderGroupInfo, Vector3> InvaderMove;
     public static Action OnGameStart;
+    public static Action<int> OnLifeChanged;
     InvaderGroupInfo info;
 
     int level = 0;
@@ -57,11 +62,11 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+        ShipController.OnShipDestoried += OnShipDestoried;
+        Invader.OnInvaderDead += OnInvaderDead;
     }
     void Start()
     {
-        Invader.OnInvaderDead += InvaderDead;
-
         info = new InvaderGroupInfo();
         info.leftX = startPosX;
         info.rightX = startPosX;
@@ -82,7 +87,25 @@ public class GameManager : MonoBehaviour
 
     void OnDisable()
     {
-        Invader.OnInvaderDead -= InvaderDead;
+        Invader.OnInvaderDead -= OnInvaderDead;
+        ShipController.OnShipDestoried -= OnShipDestoried;
+    }
+
+    void Update()
+    {
+
+    }
+
+    void OnShipDestoried()
+    {
+        if (life-- > 0)
+        {
+            OnLifeChanged.Invoke(life);
+        }
+        else
+        {
+            GameOver();
+        }
     }
 
     public void ObserverAdd(IScoreObserver observer)
@@ -111,7 +134,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void InvaderDead(int invaderScore)
+    void OnInvaderDead(int invaderScore)
     {
         tickInterval = Mathf.Lerp(tickFastest, tickInitial, (float)--info.invaders / 50f);
         score += invaderScore;
@@ -127,9 +150,10 @@ public class GameManager : MonoBehaviour
     public void LevelStart()
     {
         UIManager.instance.LevelDisplay(1);
+        OnLifeChanged.Invoke(life);
         player.SetActive(true);
         InitializeInvaders();
-        StartCoroutine(InvaderProcess());
+        StartCoroutine(GameProcess());
     }
 
     void InitializeInvaders()
@@ -149,15 +173,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator InvaderProcess()
+    IEnumerator GameProcess()
     {
         while (isGameRunning)
         {
             yield return new WaitForSeconds(tickInterval);
+            InvaderCheckIfCanShoot();
             InvaderProgress();
+            invaderShoot();
             GameOverCheck();
         }
         GameOver();
+    }
+
+    void invaderShoot()
+    {
+        if (missileStartPos.Count > 0 && invaderCanShoot)
+        {
+            //SoundManager.Play("Missile");
+            GameObject missile = missilePool.GetMissile();
+            missile.transform.position = missileStartPos[UnityEngine.Random.Range(0, missileStartPos.Count)];
+            invaderCanShoot = false;
+            invaderShootNextTime = Time.time + UnityEngine.Random.Range(invaderShootInterval[0], invaderShootInterval[1]);
+        }
+    }
+
+    void InvaderCheckIfCanShoot()
+    {
+        if (Time.time > invaderShootNextTime)
+        {
+            missileStartPos.Clear();
+            invaderCanShoot = true;
+        }
     }
 
     void InvaderProgress()
@@ -221,10 +268,5 @@ public class GameManager : MonoBehaviour
     void GameOver()
     {
         Debug.Log("GameOver");
-    }
-
-    void Update()
-    {
-        
     }
 }

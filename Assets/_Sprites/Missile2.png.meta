@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 4ab638ebc09006649bf0c576505d3e0a
+guid: 460dadc264631a44982c7ee407864938
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3575667593051264364
-    second: Splat_0
-  - first:
-      213: 5700133136444788116
-    second: Splat_1
+      213: -5307199106723886265
+    second: Missile2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 26
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -142,35 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Splat_0
+      name: Missile2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 30
-        height: 16
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c6552be2bb25f9130800000000000000
-      internalID: 3575667593051264364
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Splat_1
-      rect:
-        serializedVersion: 2
-        x: 17
-        y: 9
         width: 6
-        height: 6
+        height: 12
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -179,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 49d893213e0fa1f40800000000000000
-      internalID: 5700133136444788116
+      spriteID: 74bc37bf78a0956b0800000000000000
+      internalID: -5307199106723886265
       vertices: []
       indices: 
       edges: []
@@ -199,8 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Splat_0: 3575667593051264364
-      Splat_1: 5700133136444788116
+      Missile2_0: -5307199106723886265
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

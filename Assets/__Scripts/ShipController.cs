@@ -1,7 +1,10 @@
+using System;
+using System.Collections;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ShipController : MonoBehaviour
 {
@@ -11,20 +14,35 @@ public class ShipController : MonoBehaviour
     [SerializeField] LaserPool LaserPool;
     [SerializeField] float laserDelay = 0.5f;
     float nextLaserTime;
+    Animator animator;
+    public static Action OnShipDestoried;
+    bool isShipDestroied;
+    float shipWidth;
+    Vector2 screenBounds;
+    float posY;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+        shipWidth = GetComponent<Collider2D>().bounds.extents.x;
+        posY = transform.position.y;
+        screenBounds = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
     }
 
     void Update()
     {
-        float shipWidth;
-        Vector2 screenBounds = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
-        shipWidth = GetComponent<Collider2D>().bounds.extents.x;
+        ShipMove();
+    }
+
+    private void ShipMove()
+    {
+        if (isShipDestroied)
+        {
+            return;
+        }
 
         rb.linearVelocityX = moveX * moveSpeed;
-        float posY = transform.position.y;
 
         if (transform.position.x < -screenBounds.x + shipWidth)
         {
@@ -43,12 +61,20 @@ public class ShipController : MonoBehaviour
 
     public void Move(InputAction.CallbackContext context)
     {
+        if (isShipDestroied)
+        {
+            return;
+        }
         moveX = context.ReadValue<Vector2>().x;
         
     }
 
     public void FireLaser(InputAction.CallbackContext context)
     {
+        if (isShipDestroied)
+        {
+            return;
+        }
         if (context.performed)
         {
             if (Time.time > nextLaserTime)
@@ -59,5 +85,24 @@ public class ShipController : MonoBehaviour
                 laser.transform.position = transform.position;
             }
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Missile"))
+        {
+            StartCoroutine(ShipDestoried());
+        }
+    }
+
+    IEnumerator ShipDestoried()
+    {
+        SoundManager.Play("ShipDestoried");
+        animator.SetBool("isShipDestoried", true);
+        isShipDestroied = true;
+        yield return new WaitForSeconds(1f);
+        animator.SetBool("isShipDestoried", false);
+        isShipDestroied = false;
+        OnShipDestoried.Invoke();
     }
 }

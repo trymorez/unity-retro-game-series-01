@@ -43,16 +43,10 @@ public class LaserPool : MonoBehaviour
 
     public void RecycleLaser(GameObject laser)
     {
-        //if (laser.transform.position.y < 10)
-        //{
-        //    Debug.Log("gotcha!");
-        //    Debug.Log(laser.transform.position.y);
-        //}
-        if (laser.activeSelf == false)
+        if (laser.activeSelf == true)
         {
-            Debug.Log("somethings wrong");
+            laser.SetActive(false);
+            laserPool.Enqueue(laser);
         }
-        laser.SetActive(false);
-        laserPool.Enqueue(laser);
     }
 }

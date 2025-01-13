@@ -6,13 +6,18 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 
 public class UIManager : MonoBehaviour, IScoreObserver
 {
     [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] TextMeshProUGUI highScoreText;
-    [SerializeField] RectTransform lifePanel;
     [SerializeField] RectTransform levelText;
+
+    [SerializeField] Canvas lifeCanvas;
+    [SerializeField] GameObject life;
+    List<GameObject> lifes = new List<GameObject>();
+
     [SerializeField] RectTransform[] rectIntro;
     [SerializeField] GameManager gameManager;
     [SerializeField] InputActionAsset inputAction;
@@ -27,6 +32,7 @@ public class UIManager : MonoBehaviour, IScoreObserver
         action = inputAction.FindAction("Player/AnyKey");
         gameManager.ObserverAdd(this);
         GameManager.OnGameStart += IntroScreenStart;
+        GameManager.OnLifeChanged += OnLifeChanged;
         pressAnyKeyMessage = rectIntro[5].GetComponent<CanvasGroup>();
     }
 
@@ -34,6 +40,7 @@ public class UIManager : MonoBehaviour, IScoreObserver
     {
         gameManager.ObserverRemove(this);
         GameManager.OnGameStart -= IntroScreenStart;
+        GameManager.OnLifeChanged -= OnLifeChanged;
     }
 
     void IntroScreenStart()
@@ -86,7 +93,6 @@ public class UIManager : MonoBehaviour, IScoreObserver
         }
     }
 
-
     public void LevelDisplay(int level)
     {
         levelText.DOScale(Vector3.one, 2f).SetEase(Ease.OutExpo);
@@ -101,6 +107,20 @@ public class UIManager : MonoBehaviour, IScoreObserver
     public void HighScoreDisplay(int highScore)
     {
         highScoreText.text = "HIGH " + highScore;
+    }
+
+    public void OnLifeChanged(int lifeCount)
+    {
+        foreach (var lifeIcon in lifes)
+        {
+            Destroy(lifeIcon);
+        }
+        lifes.Clear();
+        for (int i = 0; i < lifeCount; i++)
+        {
+            var lifeIcon = Instantiate(life, lifeCanvas.transform);
+            lifes.Add(lifeIcon);
+        }
     }
 
     public void OnScoreChanged(int score)

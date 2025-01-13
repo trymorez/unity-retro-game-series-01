@@ -5,6 +5,7 @@ using UnityEditor;
 
 public class InvaderPool : MonoBehaviour
 {
+    [SerializeField] MissilePool missilePool;
     public InvaderData[] invaderDatas;
     public int[] poolSize;
     public static InvaderPool instance;
@@ -42,6 +43,7 @@ public class InvaderPool : MonoBehaviour
         invader.score = invaderData.score;
         invader.color = invaderData.color;
         invader.prefab = invaderData.prefab;
+        invader.missilePool = missilePool;
         invaderInstance.SetActive(false);
         invaderQueue.Enqueue(invaderInstance);
     }
