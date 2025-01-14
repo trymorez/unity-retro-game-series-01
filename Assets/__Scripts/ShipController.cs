@@ -98,7 +98,7 @@ public class ShipController : MonoBehaviour
 
     IEnumerator ShipDestoried()
     {
-        SoundManager.Play("ShipDestoried");
+        SoundManager.Play("ShipKilled");
         animator.SetBool("isShipDestoried", true);
         isShipDestroied = true;
         yield return new WaitForSeconds(1f);

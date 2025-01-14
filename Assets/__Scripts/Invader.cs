@@ -104,7 +104,7 @@ public class Invader : MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
-            SoundManager.Play("InvaderDestroied");
+            SoundManager.Play("InvaderKilled");
             OnInvaderDead!.Invoke(score);
             OnRecycleInvader!.Invoke(gameObject, prefab);
         }

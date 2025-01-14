@@ -78,8 +78,8 @@ public class GameManager : MonoBehaviour
         info.rightX = startPosX;
         info.topY = startPosY;
         info.bottomY = startPosY;
-        info.invaders = 0;
-        score = 0;
+
+        UnityEngine.Random.InitState((int)Time.time);
         highScore = PlayerPrefs.GetInt("HighScore", 0);
         ObserverNotifyHighScore();
         GameStart();
@@ -143,7 +143,12 @@ public class GameManager : MonoBehaviour
     {
         info.invaders--;
         CalculateTick();
-        score += invaderScore;
+        ScoreAdd(invaderScore);
+    }
+
+    public void ScoreAdd(int scoreToAdd)
+    {
+        score += scoreToAdd;
         ObserverNotifyScore();
         if (score > highScore)
         {
@@ -153,7 +158,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void CalculateTick()
+    void CalculateTick()
     {
         tick = Mathf.Lerp(tickFastest, tickInitial, (float)info.invaders / 50f);
     }
@@ -203,7 +208,6 @@ public class GameManager : MonoBehaviour
     {
         if (missileStartPos.Count > 0 && invaderCanShoot)
         {
-            //SoundManager.Play("Missile");
             GameObject missile = missilePool.MissileGet();
             missile.transform.position = missileStartPos[UnityEngine.Random.Range(0, missileStartPos.Count)];
             invaderCanShoot = false;
@@ -310,6 +314,7 @@ public class GameManager : MonoBehaviour
         invaderDescent = false;
         invaderCanShoot = false;
 
+        UFO.UFOReset();
         InitializeInvaders();
         StopAllCoroutines();
         StartCoroutine(GameProcess());
