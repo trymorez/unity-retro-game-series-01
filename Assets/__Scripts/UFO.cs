@@ -48,7 +48,6 @@ public class UFO : MonoBehaviour
     void UFONextTimeCalculate()
     {
         float timeToWait = UnityEngine.Random.Range(UFOInterval[0], UFOInterval[1]);
-        Debug.Log(timeToWait);
         UFONextTime = Time.time + timeToWait;
     }
 
