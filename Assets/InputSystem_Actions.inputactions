@@ -102,6 +102,17 @@
                 },
                 {
                     "name": "",
+                    "id": "31dcabf5-7643-4282-b36c-41753af3fd8c",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "51717eba-befa-4c00-ba1a-76cb5f6253d6",
                     "path": "<Keyboard>/anyKey",
                     "interactions": "",

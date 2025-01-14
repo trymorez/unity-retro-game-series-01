@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        ShipController.OnShipDestoried += OnShipDestoried;
+        Player.OnShipDestoried += OnShipDestoried;
         Invader.OnInvaderDead += OnInvaderDead;
     }
     void Start()
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
     void OnDisable()
     {
         Invader.OnInvaderDead -= OnInvaderDead;
-        ShipController.OnShipDestoried -= OnShipDestoried;
+        Player.OnShipDestoried -= OnShipDestoried;
     }
 
     void Update()

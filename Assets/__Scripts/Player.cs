@@ -1,25 +1,24 @@
 using System;
 using System.Collections;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SocialPlatforms.Impl;
 
-public class ShipController : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    float moveX;
+    [SerializeField] float moveSpeed;
+    [SerializeField] LaserPool laserPool;
+    [SerializeField] float laserDelay;
+
     Rigidbody2D rb;
-    [SerializeField] float moveSpeed = 5.0f;
-    [SerializeField] LaserPool LaserPool;
-    [SerializeField] float laserDelay = 0.5f;
-    float nextLaserTime;
     Animator animator;
-    public static Action OnShipDestoried;
+    float moveX;
+    float nextLaserTime;
     bool isShipDestroied;
     float shipWidth;
     Vector2 screenBounds;
     float posY;
+
+    public static Action OnShipDestoried;
 
     void Start()
     {
@@ -35,7 +34,7 @@ public class ShipController : MonoBehaviour
         ShipMove();
     }
 
-    private void ShipMove()
+    void ShipMove()
     {
         if (isShipDestroied)
         {
@@ -82,7 +81,7 @@ public class ShipController : MonoBehaviour
             {
                 SoundManager.Play("Laser");
                 nextLaserTime = Time.time + laserDelay;
-                GameObject laser = LaserPool.LaserGet();
+                GameObject laser = laserPool.LaserGet();
                 laser.transform.position = transform.position;
             }
         }
@@ -98,12 +97,12 @@ public class ShipController : MonoBehaviour
 
     IEnumerator ShipDestoried()
     {
+        isShipDestroied = true;
         SoundManager.Play("ShipKilled");
         animator.SetBool("isShipDestoried", true);
-        isShipDestroied = true;
         yield return new WaitForSeconds(1f);
         animator.SetBool("isShipDestoried", false);
         isShipDestroied = false;
-        OnShipDestoried.Invoke();
+        OnShipDestoried?.Invoke();
     }
 }

@@ -57,8 +57,10 @@ public class UFO : MonoBehaviour
         {
             transform.Translate(new Vector3(UFODirection * UFOSpeed * Time.deltaTime, 0, 0));
             float PosX = transform.position.x;
-            if (UFODirection == 1 && PosX > UFOPosX)
+            if (UFODirection == 1 && PosX > UFOPosX ||
+                UFODirection == -1 && PosX < -UFOPosX)
             {
+                UFOPreparing = false;
                 UFOLaunched = false;
                 UFONextTimeCalculate();
             }
@@ -71,6 +73,7 @@ public class UFO : MonoBehaviour
         UFOPreparing = true;
         while (GameManager.isGameRunning && !UFOLaunched)
         {
+            Debug.Log("UFOPrefarering");
             if (Time.time > UFONextTime)
             {
                 UFOLaunch();
@@ -84,18 +87,23 @@ public class UFO : MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
-            SoundManager.Play("UFOKilled");
-            UFOLaunched = false;
-            UFONextTimeCalculate();
-            
-            var pointsInstance = Instantiate(points, transform);
-            pointsInstance.transform.parent = null;
-            transform.position = new Vector3(UFOPosX, UFOPosY, 0);
-
-            int scoreToAdd = UFOScore[Random.Range(0, UFOScore.Length)];
-            pointsInstance.GetComponentInChildren<TMP_Text>().text = scoreToAdd.ToString();
-            GameManager.Instance.ScoreAdd(scoreToAdd);
+            UFOKilled();
         }
+    }
+
+    private void UFOKilled()
+    {
+        SoundManager.Play("UFOKilled");
+        UFOLaunched = false;
+        UFONextTimeCalculate();
+
+        var pointsInstance = Instantiate(points, transform);
+        pointsInstance.transform.parent = null;
+        transform.position = new Vector3(UFOPosX, UFOPosY, 0);
+
+        int scoreToAdd = UFOScore[Random.Range(0, UFOScore.Length)];
+        pointsInstance.GetComponentInChildren<TMP_Text>().text = scoreToAdd.ToString();
+        GameManager.Instance.ScoreAdd(scoreToAdd);
     }
 
     public static void UFOReset()
