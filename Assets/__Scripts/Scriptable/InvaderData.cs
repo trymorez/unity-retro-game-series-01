@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
-[CreateAssetMenu(fileName = "NewInvader", menuName = "Invader")]
+[CreateAssetMenu(fileName = "NewInvader", menuName = "Scriptable Objects/Invader")]
 public class InvaderData : ScriptableObject
 {
     public int score;

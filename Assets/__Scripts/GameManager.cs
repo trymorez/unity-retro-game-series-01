@@ -15,8 +15,14 @@ public class InvaderGroupInfo
 
 public class GameManager : MonoBehaviour
 {
+    [Header("--- Level data ---")]
+    [SerializeField] LevelData[] levels;
+
+    [Header("--- Pools ---")]
     [SerializeField] MissilePool missilePool;
     [SerializeField] InvaderPool invaderPool;
+
+    [Header("--- Level data cache ---")]
     [SerializeField] float startPosX = -8f;
     [SerializeField] float startPosY = 7.5f;
     [SerializeField] float spacingX = 2f;
@@ -36,11 +42,13 @@ public class GameManager : MonoBehaviour
     float[] invaderShootInterval = { 0.5f, 2.0f };
     float invaderShootNextTime;
 
+    [Header("--- Global game variables ---")]
     [SerializeField] int life = 3;
     [SerializeField] int score = 0;
     [SerializeField] int highScore = 0;
     [SerializeField] GameObject player;
 
+    [HideInInspector]
     public List<Vector2> missileStartPos = new List<Vector2>();
 
     string[] tickSounds = { "Tick0", "Tick1", "Tick2", "Tick3" };
@@ -51,15 +59,15 @@ public class GameManager : MonoBehaviour
     public static Action<int> OnLifeChanged;
     public static Action OnGameOver;
     InvaderGroupInfo info;
-    int level = 1;
+    public int level = 0;
     public static bool isGameRunning = false;
-    public static GameManager instance;
+    public static GameManager Instance {  get; private set; }
 
     List<IScoreObserver> observers = new List<IScoreObserver>();
 
     void Awake()
     {
-        instance = this;
+        Instance = this;
         ShipController.OnShipDestoried += OnShipDestoried;
         Invader.OnInvaderDead += OnInvaderDead;
     }
@@ -152,11 +160,10 @@ public class GameManager : MonoBehaviour
 
     public void LevelStart()
     {
-        UIManager.instance.LevelDisplay(1);
+        UIManager.instance.LevelDisplay(level+1);
         OnLifeChanged.Invoke(life);
         player.SetActive(true);
-        InitializeInvaders();
-        StartCoroutine(GameProcess());
+        LevelInit();
     }
 
     void InitializeInvaders()
@@ -273,20 +280,39 @@ public class GameManager : MonoBehaviour
             InvaderPool.Instance.InvaderPoolInit();
             LaserPool.Instance.LaserPoolInit();
             MissilePool.Instance.MissilePoolInit();
-            level++;
-            UIManager.instance.LevelDisplay(level);
+            UIManager.instance.LevelDisplay(++level+1);
 
-            info.leftX = startPosX;
-            info.rightX = startPosX;
-            info.topY = startPosY;
-            info.bottomY = startPosY;
-            info.invaders = 0;
-            info.sprite = 0;
-
-            InitializeInvaders();
-            StopAllCoroutines();
-            StartCoroutine(GameProcess());
+            LevelInit();
         }
+    }
+
+    void LevelInit()
+    {
+        int levelIndex = level;
+        
+        levelIndex = Mathf.Clamp(levelIndex, 0, levels.Length - 1);
+        tickInitial = levels[levelIndex].tickInitial;
+        tickFastest = levels[levelIndex].tickFastest;
+        startPosY = levels[levelIndex].startPosY;
+        screenEdge = levels[levelIndex].screenEdge;
+        descentSteps = levels[levelIndex].descentSteps;
+        invaderShootInterval = levels[levelIndex].invaderShootInterval;
+
+        info.leftX = startPosX;
+        info.rightX = startPosX;
+        info.topY = startPosY;
+        info.bottomY = startPosY;
+        info.invaders = 0;
+        info.sprite = 0;
+
+        invaderDirection = 1;
+        descentCurrentSteps = 0;
+        invaderDescent = false;
+        invaderCanShoot = false;
+
+        InitializeInvaders();
+        StopAllCoroutines();
+        StartCoroutine(GameProcess());
     }
 
     void GameOverCheck()

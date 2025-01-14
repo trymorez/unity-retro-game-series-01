@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour, IScoreObserver
         GameManager.isGameRunning = true;
         action.Disable();
         IntroScreenEnd();
-        GameManager.instance.LevelStart();
+        GameManager.Instance.LevelStart();
     }
 
     IEnumerator PressAnyKey()
