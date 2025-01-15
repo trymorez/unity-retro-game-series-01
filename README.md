@@ -18,7 +18,7 @@ I created a retro arcade game Space Invaders clone using Unity 6.0. My goal was 
 ![screenshot](Assets/Screenshot/Screenshot02.png)
 
 ## Version History (버전 내역)
-**V 1.25 - (2025-01-15)
+**V 1.25 - (2025-01-15)**
 - Fixed a bug where UFOs sometimes would not respawn
 
 **V 1.2 - (2025-01-14)**
