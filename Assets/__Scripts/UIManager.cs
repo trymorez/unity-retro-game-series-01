@@ -22,11 +22,11 @@ public class UIManager : MonoBehaviour, IScoreObserver
     CanvasGroup pressAnyKeyMessage;
     InputAction action;
     float introOrigX = -340f;
-    public static UIManager instance;
+    public static UIManager Instance;
 
     void Awake()
     {
-        instance = this;
+        Instance = this;
         action = inputAction.FindAction("Player/AnyKey");
         gameManager.ObserverAdd(this);
         GameManager.OnGameStart += IntroScreenStart;

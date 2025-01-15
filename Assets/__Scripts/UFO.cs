@@ -73,7 +73,6 @@ public class UFO : MonoBehaviour
         UFOPreparing = true;
         while (GameManager.isGameRunning && !UFOLaunched)
         {
-            Debug.Log("UFOPrefarering");
             if (Time.time > UFONextTime)
             {
                 UFOLaunch();

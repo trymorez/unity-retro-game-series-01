@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     int descentSteps = 2;
     int descentCurrentSteps;
     bool invaderDescent;
-    public bool invaderCanShoot;
+    public bool InvaderCanShoot;
     float[] invaderShootInterval = { 0.5f, 2.0f };
     float invaderShootNextTime;
 
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
     public static Action<int> OnLifeChanged;
     public static Action OnGameOver;
     InvaderGroupInfo info;
-    public int level = 0;
+    public int Level = 0;
     public static bool isGameRunning = false;
     public static GameManager Instance {  get; private set; }
 
@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
         Player.OnShipDestoried += OnShipDestoried;
         Invader.OnInvaderDead += OnInvaderDead;
     }
+
     void Start()
     {
         info = new InvaderGroupInfo();
@@ -85,20 +86,15 @@ public class GameManager : MonoBehaviour
         GameStart();
     }
 
-    void GameStart()
-    {
-        OnGameStart.Invoke();
-    }
-
     void OnDisable()
     {
         Invader.OnInvaderDead -= OnInvaderDead;
         Player.OnShipDestoried -= OnShipDestoried;
     }
 
-    void Update()
+    void GameStart()
     {
-
+        OnGameStart!.Invoke();
     }
 
     void OnShipDestoried()
@@ -158,17 +154,42 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void CalculateTick()
-    {
-        tick = Mathf.Lerp(tickFastest, tickInitial, (float)info.invaders / 50f);
-    }
-
     public void LevelStart()
     {
-        UIManager.instance.LevelDisplay(level+1);
+        UIManager.Instance.LevelDisplay(Level+1);
         OnLifeChanged.Invoke(life);
         player.SetActive(true);
         LevelInit();
+    }
+
+    void LevelInit()
+    {
+        int levelIndex = Level;
+
+        levelIndex = Mathf.Clamp(levelIndex, 0, levels.Length - 1);
+        tickInitial = levels[levelIndex].tickInitial;
+        tickFastest = levels[levelIndex].tickFastest;
+        startPosY = levels[levelIndex].startPosY;
+        screenEdge = levels[levelIndex].screenEdge;
+        descentSteps = levels[levelIndex].descentSteps;
+        invaderShootInterval = levels[levelIndex].invaderShootInterval;
+
+        info.leftX = startPosX;
+        info.rightX = startPosX;
+        info.topY = startPosY;
+        info.bottomY = startPosY;
+        info.invaders = 0;
+        info.sprite = 0;
+
+        invaderDirection = 1;
+        descentCurrentSteps = 0;
+        invaderDescent = false;
+        InvaderCanShoot = false;
+
+        UFO.UFOReset();
+        InitializeInvaders();
+        StopAllCoroutines();
+        StartCoroutine(GameProcess());
     }
 
     void InitializeInvaders()
@@ -190,6 +211,11 @@ public class GameManager : MonoBehaviour
         CalculateTick();
     }
 
+    void CalculateTick()
+    {
+        tick = Mathf.Lerp(tickFastest, tickInitial, (float)info.invaders / 50f);
+    }
+
     IEnumerator GameProcess()
     {
         while (isGameRunning)
@@ -204,23 +230,23 @@ public class GameManager : MonoBehaviour
         GameOver();
     }
 
-    void InvaderShoot()
-    {
-        if (missileStartPos.Count > 0 && invaderCanShoot)
-        {
-            GameObject missile = missilePool.MissileGet();
-            missile.transform.position = missileStartPos[UnityEngine.Random.Range(0, missileStartPos.Count)];
-            invaderCanShoot = false;
-            invaderShootNextTime = Time.time + UnityEngine.Random.Range(invaderShootInterval[0], invaderShootInterval[1]);
-        }
-    }
-
     void InvaderCheckIfCanShoot()
     {
         if (Time.time > invaderShootNextTime)
         {
             missileStartPos.Clear();
-            invaderCanShoot = true;
+            InvaderCanShoot = true;
+        }
+    }
+
+    void InvaderShoot()
+    {
+        if (missileStartPos.Count > 0 && InvaderCanShoot)
+        {
+            GameObject missile = missilePool.MissileGet();
+            missile.transform.position = missileStartPos[UnityEngine.Random.Range(0, missileStartPos.Count)];
+            InvaderCanShoot = false;
+            invaderShootNextTime = Time.time + UnityEngine.Random.Range(invaderShootInterval[0], invaderShootInterval[1]);
         }
     }
 
@@ -284,40 +310,10 @@ public class GameManager : MonoBehaviour
             InvaderPool.Instance.InvaderPoolInit();
             LaserPool.Instance.LaserPoolInit();
             MissilePool.Instance.MissilePoolInit();
-            UIManager.instance.LevelDisplay(++level+1);
+            UIManager.Instance.LevelDisplay(++Level+1);
 
             LevelInit();
         }
-    }
-
-    void LevelInit()
-    {
-        int levelIndex = level;
-        
-        levelIndex = Mathf.Clamp(levelIndex, 0, levels.Length - 1);
-        tickInitial = levels[levelIndex].tickInitial;
-        tickFastest = levels[levelIndex].tickFastest;
-        startPosY = levels[levelIndex].startPosY;
-        screenEdge = levels[levelIndex].screenEdge;
-        descentSteps = levels[levelIndex].descentSteps;
-        invaderShootInterval = levels[levelIndex].invaderShootInterval;
-
-        info.leftX = startPosX;
-        info.rightX = startPosX;
-        info.topY = startPosY;
-        info.bottomY = startPosY;
-        info.invaders = 0;
-        info.sprite = 0;
-
-        invaderDirection = 1;
-        descentCurrentSteps = 0;
-        invaderDescent = false;
-        invaderCanShoot = false;
-
-        UFO.UFOReset();
-        InitializeInvaders();
-        StopAllCoroutines();
-        StartCoroutine(GameProcess());
     }
 
     void GameOverCheck()

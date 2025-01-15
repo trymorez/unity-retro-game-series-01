@@ -72,7 +72,7 @@ public class Invader : MonoBehaviour
     float rayLength = 3f;
     void RegisterShootPos()
     {
-        if (GameManager.Instance.invaderCanShoot)
+        if (GameManager.Instance.InvaderCanShoot)
         {
             Vector3 origin = transform.position + Vector3.down * 1.0f;
             
