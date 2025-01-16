@@ -5,13 +5,14 @@ using UnityEngine;
 public class MissilePool : MonoBehaviour
 {
     [SerializeField] GameObject missilePrefab;
-    [SerializeField] int poolSize;
+    [SerializeField] int poolSize = 20;
     Queue<GameObject> missilePool;
     public static MissilePool Instance { get; private set; }
 
     void Awake()
     {
         Instance = this;
+        Missile.OnRecycleMissle += MissleRecycle;
     }
 
     void Start()
@@ -19,14 +20,17 @@ public class MissilePool : MonoBehaviour
         MissilePoolCreate();
     }
 
+    void OnDestroy()
+    {
+        Missile.OnRecycleMissle -= MissleRecycle;
+    }
+
     private void MissilePoolCreate()
     {
-        Missile.OnRecycleMissle += MissleRecycle;
-
         missilePool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject missile = Instantiate(missilePrefab);
+            var missile = Instantiate(missilePrefab);
             missile.SetActive(false);
             missilePool.Enqueue(missile);
         }
@@ -47,22 +51,17 @@ public class MissilePool : MonoBehaviour
         }
     }
 
-    void OnDestroy()
-    {
-        Missile.OnRecycleMissle -= MissleRecycle;
-    }
-
     public GameObject MissileGet()
     {
         if (missilePool.Count > 0)
         {
-            GameObject missile = missilePool.Dequeue();
+            var missile = missilePool.Dequeue();
             missile.SetActive(true);
             return missile;
         }
         else
         {
-            GameObject missle = Instantiate(missilePrefab);
+            var missle = Instantiate(missilePrefab);
             return missle;
         }
     }

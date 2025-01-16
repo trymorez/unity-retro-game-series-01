@@ -10,7 +10,8 @@ public class InvaderPool : MonoBehaviour
     public int[] poolSize;
     public static InvaderPool Instance {  get; private set; }
     
-    Dictionary<GameObject, Queue<GameObject>> invaderPools = new Dictionary<GameObject, Queue<GameObject>>();
+    Dictionary<GameObject, Queue<GameObject>> invaderPools = 
+        new Dictionary<GameObject, Queue<GameObject>>();
 
     void Awake()
     {
@@ -19,13 +20,18 @@ public class InvaderPool : MonoBehaviour
         InvaderPoolCreate();
     }
 
+    void OnDestroy()
+    {
+        Invader.OnRecycleInvader -= InvaderRecycle;
+    }
+
     void InvaderPoolCreate()
     {
         int typeIndex = 0;
 
         foreach (var invaderData in invaderDatas)
         {
-            Queue<GameObject> invaderQueue = new Queue<GameObject>();
+            var invaderQueue = new Queue<GameObject>();
             for (int i = 0; i < poolSize[typeIndex]; i++)
             {
                 invaderPoolPopulate(invaderQueue, invaderData);
@@ -67,16 +73,11 @@ public class InvaderPool : MonoBehaviour
         invaderQueue.Enqueue(invaderInstance);
     }
 
-    void OnDisable()
-    {
-        Invader.OnRecycleInvader -= InvaderRecycle;
-    }
-
     public GameObject InvaderGet(GameObject prefab)
     {
         if (invaderPools.ContainsKey(prefab) && invaderPools[prefab].Count > 0)
         {
-            GameObject invader = invaderPools[prefab].Dequeue();
+            var invader = invaderPools[prefab].Dequeue();
             invader.SetActive(true);
             return invader;
         }

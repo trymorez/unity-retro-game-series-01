@@ -5,13 +5,14 @@ using UnityEngine;
 public class LaserPool : MonoBehaviour
 {
     [SerializeField] GameObject laserPrefab;
-    [SerializeField] int poolSize;
+    [SerializeField] int poolSize = 10;
     Queue<GameObject> laserPool;
     public static LaserPool Instance { get; private set; }
 
     void Awake()
     {
         Instance = this;
+        Laser.OnRecycleLaser += LaserRecycle;
     }
 
     void Start()
@@ -19,14 +20,17 @@ public class LaserPool : MonoBehaviour
         LaserPoolCreate();
     }
 
-    private void LaserPoolCreate()
+    void OnDestroy()
     {
-        Laser.OnRecycleLaser += LaserRecycle;
+        Laser.OnRecycleLaser -= LaserRecycle;
+    }
 
+    void LaserPoolCreate()
+    {
         laserPool = new Queue<GameObject>();
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject laser = Instantiate(laserPrefab);
+            var laser = Instantiate(laserPrefab);
             laser.SetActive(false);
             laserPool.Enqueue(laser);
         }
@@ -47,22 +51,17 @@ public class LaserPool : MonoBehaviour
         }
     }
 
-    void OnDestroy()
-    {
-        Laser.OnRecycleLaser -= LaserRecycle;
-    }
-
     public GameObject LaserGet()
     {
         if (laserPool.Count > 0)
         {
-            GameObject laser = laserPool.Dequeue();
+            var laser = laserPool.Dequeue();
             laser.SetActive(true);
             return laser;
         }
         else
         {
-            GameObject laser = Instantiate(laserPrefab);
+            var laser = Instantiate(laserPrefab);
             return laser;
         }
     }

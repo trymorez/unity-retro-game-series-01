@@ -15,6 +15,7 @@ public class Invader : MonoBehaviour
     public Sprite[] sprite;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
+    float rayLength = 3f;
 
     void Start()
     {
@@ -69,27 +70,20 @@ public class Invader : MonoBehaviour
         }
     }
 
-    float rayLength = 3f;
     void RegisterShootPos()
     {
-        if (GameManager.Instance.InvaderCanShoot)
+        if (!GameManager.Instance.InvaderCanShoot)
         {
-            Vector3 origin = transform.position + Vector3.down * 1.0f;
+            return;
+        }
+
+        Vector3 origin = transform.position + Vector3.down * 1.0f;
             
-            RaycastHit2D ray = Physics2D.Raycast(origin, Vector2.down, rayLength);
-            if (ray.collider == null || !ray.collider.CompareTag("Enemy"))
-            {
-                if (UnityEngine.Random.value > 0.5f)
-                {
-                    origin += Vector3.right * 0.1f;
-                }
-                else
-                {
-                    origin -= Vector3.right * 0.1f;
-                }
-                GameManager.Instance.missileStartPos.Add(origin);
-            }
-            
+        RaycastHit2D ray = Physics2D.Raycast(origin, Vector2.down, rayLength);
+        if (ray.collider == null || !ray.collider.CompareTag("Enemy"))
+        {
+            origin += Vector3.right * (UnityEngine.Random.value > 0.5f ? 0.1f : -0.1f);
+            GameManager.Instance.missileStartPos.Add(origin);
         }
     }
 
