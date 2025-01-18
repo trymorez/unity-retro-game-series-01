@@ -1,5 +1,5 @@
 
-# Space Invader Clone (스페이스 인베이더 클론) V 1.26
+# Space Invader Clone (스페이스 인베이더 클론) V 1.27
 
 I created a retro arcade game Space Invaders clone using Unity 6.0. My goal was to implement it using Scriptable Objects, Object Pools, and the Observer pattern.
 
@@ -18,6 +18,9 @@ I created a retro arcade game Space Invaders clone using Unity 6.0. My goal was 
 ![screenshot](Assets/Screenshot/Screenshot02.png)
 
 ## Version History (버전 내역)
+**V 1.26 - (2025-01-18)**
+- Fixed a bug where the player occasionally continued moving in the original direction after being destroyed
+
 **V 1.26 - (2025-01-16)**
 - Cleaned up the code and made it easier to read
 

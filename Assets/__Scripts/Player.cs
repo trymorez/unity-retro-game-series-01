@@ -63,6 +63,7 @@ public class Player : MonoBehaviour
     {
         if (isShipDestroied)
         {
+            moveX = 0;
             return;
         }
         moveX = context.ReadValue<Vector2>().x;
