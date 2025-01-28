@@ -5,7 +5,7 @@ I created a retro arcade game Space Invaders clone using Unity 6.0. My goal was 
 
 - Recommended Unity version: Unity 6 (6000.0.32f1 and later)
 
-[**[Play Game!!!]**](https://trymorez.github.io/unity-2d-platformer/Build/index.html)
+[**[Play Game!!!]**](https://trymorez.github.io/unity-retro-game-series-01/Build/index.html)
 
 ## Screenshots
 
