@@ -1,23 +1,18 @@
 
-# Space Invader Clone (스페이스 인베이더 클론) V 1.27
+# Space Invader Clone V 1.27
 
 I created a retro arcade game Space Invaders clone using Unity 6.0. My goal was to implement it using Scriptable Objects, Object Pools, and the Observer pattern.
 
-레트로 아케이드 게임인 스페이스 인베이더를 유니티 6.0으로 만들었습니다. 스크립터블 오브젝트, 오브젝트 풀, 옵서버 패턴을 사용해서 구현하는 것이 목표였습니다.
-
 - Recommended Unity version: Unity 6 (6000.0.32f1 and later)
 
+[**[Play Game!!!]**](https://trymorez.github.io/unity-2d-platformer/Build/index.html)
 
-## Authors (제작자)
-
-- [@trymorez](https://www.github.com/trymorez)
-
-## Screenshots (스크린샷)
+## Screenshots
 
 ![screenshot](Assets/Screenshot/Screenshot01.png)
 ![screenshot](Assets/Screenshot/Screenshot02.png)
 
-## Version History (버전 내역)
+## Version History
 **V 1.27 - (2025-01-18)**
 - Fixed a bug where the player occasionally continued moving in the original direction after being destroyed
 
